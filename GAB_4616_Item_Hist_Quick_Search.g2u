@@ -1,0 +1,651 @@
+Program.Sub.ScreenSU.Start
+Gui.frmSearch..Create
+Gui.frmSearch..Caption("Item History Search")
+Gui.frmSearch..Size(15315,9405)
+Gui.frmSearch..MinX(0)
+Gui.frmSearch..MinY(0)
+Gui.frmSearch..Position(0,0)
+Gui.frmSearch..BackColor(-2147483633)
+Gui.frmSearch..MousePointer(0)
+Gui.frmSearch..Event(UnLoad,FrmMain_UnLoad)
+Gui.frmSearch.GsGCSearch.Create(GsGridControl)
+Gui.frmSearch.GsGCSearch.Size(15075,7920)
+Gui.frmSearch.GsGCSearch.Position(60,1125)
+Gui.frmSearch.picGssLogo.Create(PictureBox)
+Gui.frmSearch.picGssLogo.Size(4125,960)
+Gui.frmSearch.picGssLogo.Position(5550,45)
+Gui.frmSearch.picGssLogo.Event(DblClick,picGSSLogo_DblClick)
+Gui.frmSearch.picGssLogo.ToolTip("Double-Click for additional functions")
+Gui.frmSearch.frameSearchBy.Create(Frame)
+Gui.frmSearch.frameSearchBy.Size(2790,1035)
+Gui.frmSearch.frameSearchBy.Position(90,45)
+Gui.frmSearch.frameSearchBy.Caption("Search By")
+Gui.frmSearch.ddlSearchBy.Create(DropDownList)
+Gui.frmSearch.ddlSearchBy.Size(2670,330)
+Gui.frmSearch.ddlSearchBy.Position(60,225)
+Gui.frmSearch.ddlSearchBy.Parent("frameSearchBy")
+Gui.frmSearch.cboPartNumber.Create(ComboBox)
+Gui.frmSearch.cboPartNumber.Size(2670,330)
+Gui.frmSearch.cboPartNumber.Position(60,615)
+Gui.frmSearch.cboPartNumber.Parent("frameSearchBy")
+Gui.frmSearch.cboPartNumber.Visible(False)
+Gui.frmSearch.cboSerialNumber.Create(ComboBox)
+Gui.frmSearch.cboSerialNumber.Size(2670,330)
+Gui.frmSearch.cboSerialNumber.Position(60,615)
+Gui.frmSearch.cboSerialNumber.Parent("frameSearchBy")
+Gui.frmSearch.cboSerialNumber.Visible(False)
+Gui.frmSearch.cboLotNumber.Create(ComboBox)
+Gui.frmSearch.cboLotNumber.Size(2670,330)
+Gui.frmSearch.cboLotNumber.Position(60,615)
+Gui.frmSearch.cboLotNumber.Parent("frameSearchBy")
+Gui.frmSearch.cboLotNumber.Visible(False)
+Gui.frmSearch.cboHeatNumber.Create(ComboBox)
+Gui.frmSearch.cboHeatNumber.Size(2670,330)
+Gui.frmSearch.cboHeatNumber.Position(60,615)
+Gui.frmSearch.cboHeatNumber.Parent("frameSearchBy")
+Gui.frmSearch.cboHeatNumber.Visible(False)
+Gui.frmSearch.cboBinNumber.Create(ComboBox)
+Gui.frmSearch.cboBinNumber.Visible(False)
+Gui.frmSearch.cboBinNumber.Size(2670,330)
+Gui.frmSearch.cboBinNumber.Position(60,615)
+Gui.frmSearch.cboBinNumber.Parent("frameSearchBy")
+Gui.frmSearch.lblStatus.Create(Label,"Loading Item History....",False,1935,255,0,2940,210,True,0,"Arial",8,-2147483633,0)
+Gui.frmSearch.pbStatus.Create(ProgressBar)
+Gui.frmSearch.pbStatus.Visible(False)
+Gui.frmSearch.pbStatus.Size(1935,255)
+Gui.frmSearch.pbStatus.Position(2940,420)
+Gui.frmWeb..Create
+Gui.frmWeb..Caption("Global Shop Solutions - Web Sites")
+Gui.frmWeb..Size(3990,1665)
+Gui.frmWeb..MinX(0)
+Gui.frmWeb..MinY(0)
+Gui.frmWeb..Position(0,0)
+Gui.frmWeb..BackColor(-2147483633)
+Gui.frmWeb..MousePointer(0)
+Gui.frmWeb..MaxButton(False)
+Gui.frmWeb..Sizeable(False)
+Gui.frmWeb..Event(UnLoad,frmWeb_UnLoad)
+Gui.frmWeb..MinButton(False)
+Gui.frmWeb.cmdGSS.Create(Button)
+Gui.frmWeb.cmdGSS.Size(3615,375)
+Gui.frmWeb.cmdGSS.Position(120,45)
+Gui.frmWeb.cmdGSS.Caption("Global Shop Solutions")
+Gui.frmWeb.cmdGSS.Event(Click,OpenWebsites)
+Gui.frmWeb.cmdServ.Create(Button)
+Gui.frmWeb.cmdServ.Size(3615,375)
+Gui.frmWeb.cmdServ.Position(120,450)
+Gui.frmWeb.cmdServ.Caption("ServiceWeb")
+Gui.frmWeb.cmdServ.Event(Click,OpenWebsites)
+Gui.frmWeb.cmdUpd.Create(Button)
+Gui.frmWeb.cmdUpd.Size(3615,375)
+Gui.frmWeb.cmdUpd.Position(120,855)
+Gui.frmWeb.cmdUpd.Caption("GSS Updates")
+Gui.frmWeb.cmdUpd.Event(Click,OpenWebsites)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+	V.Global.bLoadData.Declare
+	V.Global.bLongPart.Declare
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	V.Local.sIcon.Declare
+	V.Local.sGssLogo.Declare
+	V.Local.sGSSVersion.Declare
+	
+	F.Intrinsic.String.Build("{0}\gss2.ico",V.Caller.GasDir,V.Local.sIcon)
+	F.Intrinsic.String.Build("{0}\GAB_GSS_Logo_Green_Dash.png",V.Caller.GasDir,V.Local.sGssLogo)
+	Gui.frmSearch..Icon(V.Local.sIcon)
+	Gui.frmWeb..Icon(V.Local.sIcon)
+	Gui.frmSearch.picGssLogo.Picture(V.Local.sGssLogo)
+	
+	'Check GS version so DDL and COMBOBOX event will fire when needed
+	F.Intrinsic.String.Split(V.Caller.GSSVersion,".",V.Local.sGSSVersion)
+	F.Intrinsic.Control.If(V.Local.sGSSVersion(0).Long,<,2019)
+		Gui.frmSearch.ddlSearchBy.Event(Click,ddlSearchBy_Click)
+		Gui.frmSearch.cboPartNumber.Event(Click,LoadDtItemHist)
+		Gui.frmSearch.cboSerialNumber.Event(Click,LoadDtItemHist)
+		Gui.frmSearch.cboLotNumber.Event(Click,LoadDtItemHist)
+		Gui.frmSearch.cboHeatNumber.Event(Click,LoadDtItemHist)
+		Gui.frmSearch.cboBinNumber.Event(Click,LoadDtItemHist)
+		
+	f.Intrinsic.Control.Else
+		Gui.frmSearch.ddlSearchBy.Event(Change,ddlSearchBy_Click)
+		Gui.frmSearch.cboPartNumber.Event(Change,LoadDtItemHist)
+		Gui.frmSearch.cboSerialNumber.Event(Change,LoadDtItemHist)
+		Gui.frmSearch.cboLotNumber.Event(Change,LoadDtItemHist)
+		Gui.frmSearch.cboHeatNumber.Event(Change,LoadDtItemHist)
+		Gui.frmSearch.cboBinNumber.Event(Change,LoadDtItemHist)
+	F.Intrinsic.Control.EndIf
+	
+	
+	F.Intrinsic.Control.BlockEvents
+	F.Intrinsic.Control.CallSub(SetAnchors)
+	F.Intrinsic.Control.CallSub(CheckLongPart)
+	F.Intrinsic.Control.CallSub(SetContextMenus)
+	F.Intrinsic.Control.CallSub(LoadListControls)
+	F.Intrinsic.Control.UnBlockEvents
+	F.Intrinsic.Control.CallSub(CheckDefault)
+	
+	Gui.frmSearch..Show
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
+
+Program.Sub.FrmMain_UnLoad.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	F.Intrinsic.Control.If(V.Global.bLoadData)
+		F.Intrinsic.Control.CallSub(Serialize)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.End
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.FrmMain_UnLoad.End
+
+Program.Sub.SetAnchors.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	'0 - None
+	'1 - Top
+	'2 - Bottom
+	'4 - Left
+	'8 - Right
+	
+	Gui.frmSearch.picGssLogo.Anchor(1)
+	Gui.frmSearch.ddlSearchBy.Anchor(5)
+	Gui.frmSearch.cboPartNumber.Anchor(5)
+	Gui.frmSearch.cboLotNumber.Anchor(5)
+	Gui.frmSearch.cboBinNumber.Anchor(5)
+	Gui.frmSearch.cboHeatNumber.Anchor(5)
+	Gui.frmSearch.cboSerialNumber.Anchor(5)
+	Gui.frmSearch.lblStatus.Anchor(5)
+	gui.frmSearch.pbStatus.Anchor(5)
+	gui.frmSearch.GsGCSearch.Anchor(15)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.SetAnchors.End
+
+Program.Sub.CheckLongPart.Start
+	F.Global.General.ReadOption("400861",0,False,"0000",V.Global.bLongPart)
+	F.Intrinsic.Control.If(V.Global.bLongPart,=,False)
+		F.Global.General.ReadOption("400861",0,False,"0004",V.Global.bLongPart)
+	F.Intrinsic.Control.EndIf
+Program.Sub.CheckLongPart.End
+
+Program.Sub.SetContextMenus.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	Gui.frmSearch..ContextMenuCreate("ctxSearch")
+	Gui.frmSearch.GsGCSearch.ContextMenuAttach("ctxSearch")
+	Gui.frmSearch..ContextMenuAddItem("ctxSearch","Refresh",0,"Refresh")
+	Gui.frmSearch..ContextMenuAddItem("ctxSearch","Export",0,"Export")
+	Gui.frmSearch..ContextMenuAddItem("ctxSearch","ResetColumns",0,"Reset Columns")
+	Gui.frmSearch..ContextMenuSetItemEventHandler("ctxSearch","Refresh","MenuClickRefresh")
+	Gui.frmSearch..ContextMenuSetItemEventHandler("ctxSearch","Export","MenuClickExport")
+	Gui.frmSearch..ContextMenuSetItemEventHandler("ctxSearch","ResetColumns","MenuClickResetColumns")
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.SetContextMenus.End
+
+Program.Sub.MenuClickRefresh.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	F.Intrinsic.Control.If(V.Global.bLoadData)
+		F.Intrinsic.Control.CallSub(Serialize)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.CallSub(LoadDtItemHist)
+	
+	F.Intrinsic.Control.CallSub(Deserialize)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.MenuClickRefresh.End
+
+Program.Sub.MenuClickExport.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sFileExport.Declare
+	V.Local.bExcel.Declare
+	V.Local.bFileLocked.Declare
+	V.Local.sMsg.Declare
+
+	F.Automation.MSExcel.CheckPresence(V.Local.bExcel)
+	F.Intrinsic.Control.If(V.Local.bExcel)
+		F.Intrinsic.String.Build("{0}\GAB_4616_Export.xlsx",V.Caller.LocalGssTempDir,V.Local.sFileExport)
+		F.Intrinsic.File.IsFileLocked(V.Local.sFileExport,V.Local.bFileLocked)
+		F.Intrinsic.Control.If(V.Local.bFileLocked)
+			F.Intrinsic.String.Build("File is already open. Please close and export again.{0}File: {1}",V.Ambient.NewLine,V.Local.sFileExport,V.Local.sMsg)
+			F.Intrinsic.UI.Msgbox(V.Local.sMsg,"File In Use")
+		F.Intrinsic.Control.Else
+			Gui.frmSearch.GsGCSearch.Export(V.Local.sFileExport,"xlsx")
+			F.Intrinsic.Task.ShellExec(0,"",V.Local.sFileExport,"","",1)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.Else
+		F.Intrinsic.String.Build("{0}\GAB_4616_Export.csv",V.Caller.LocalGssTempDir,V.Local.sFileExport)
+		F.Intrinsic.File.IsFileLocked(V.Local.sFileExport,V.Local.bFileLocked)
+		F.Intrinsic.Control.If(V.Local.bFileLocked)
+			F.Intrinsic.String.Build("File is already open. Please close and export again.{0}File: {1}",V.Ambient.NewLine,V.Local.sFileExport,V.Local.sMsg)
+			F.Intrinsic.UI.Msgbox(V.Local.sMsg,"File In Use")
+		F.Intrinsic.Control.Else
+			Gui.frmSearch.GsGCSearch.Export(V.Local.sFileExport,"csv")
+		F.Intrinsic.Control.EndIf
+		F.Intrinsic.Task.ShellExec(0,"",V.Local.sFileExport,"","",1)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.MenuClickExport.End
+
+Program.Sub.MenuClickResetColumns.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	F.Intrinsic.Control.SelectCase(V.Args.MenuName)
+		F.Intrinsic.Control.Case("CTXSEARCH")
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"GVITEMHIST",4616,1000,False,"Serialize",False,0,-999.0,1/1/1980,12:00:00 AM,"")
+			F.Intrinsic.Control.CallSub(LoadDtItemHist)
+	F.Intrinsic.Control.EndSelect
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.MenuClickResetColumns.End
+
+Program.Sub.LoadListControls.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	'Load ddlSearchBy
+	Gui.frmSearch.ddlSearchBy.AddItem("Part",0)
+	Gui.frmSearch.ddlSearchBy.AddItem("Lot",1)
+	Gui.frmSearch.ddlSearchBy.AddItem("Bin",2)
+	Gui.frmSearch.ddlSearchBy.AddItem("Heat",3)
+	Gui.frmSearch.ddlSearchBy.AddItem("Serial",4)
+	
+	'Load Combo Boxes
+	F.ODBC.Connection!con.OpenCompanyConnection(300)
+	F.Data.DataTable.CreateFromSQL("dtCombo","con","Select RTrim(Part) As Part,RTrim(Lot) As Lot,RTrim(Bin) As Bin,RTrim(Heat) As Heat,RTrim(Serial_Number) As Serial_Number From V_Item_History",True)
+	F.Data.DataView.Create("dtCombo","dvCombo")
+	F.ODBC.Connection!con.Close
+	'Part Numbers
+	F.Data.DataView.ToDataTableDistinct("dtCombo","dvCombo","dtPartDistinct","Part",True)
+	F.Data.DataView.Create("dtPartDistinct","dvPart",22,"","Part")
+	Gui.frmSearch.cboPartNumber.AddItems("DataView","dtPartDistinct","dvPart","Part","Part")
+	'Lots
+	F.Data.DataView.ToDataTableDistinct("dtCombo","dvCombo","dtLotDistinct","Lot",True)
+	F.Data.DataView.Create("dtLotDistinct","dvLot",22,"","Lot")
+	Gui.frmSearch.cboLotNumber.AddItems("DataView","dtLotDistinct","dvLot","Lot","Lot")
+	'Bins
+	F.Data.DataView.ToDataTableDistinct("dtCombo","dvCombo","dtBinDistinct","Bin",True)
+	F.Data.DataView.Create("dtBinDistinct","dvBin",22,"","Bin")
+	Gui.frmSearch.cboBinNumber.AddItems("DataView","dtBinDistinct","dvBin","Bin","Bin")
+	'Heats
+	F.Data.DataView.ToDataTableDistinct("dtCombo","dvCombo","dtHeatDistinct","Heat",True)
+	F.Data.DataView.Create("dtHeatDistinct","dvHeat",22,"","Heat")
+	Gui.frmSearch.cboHeatNumber.AddItems("DataView","dtHeatDistinct","dvHeat","Heat","Heat")
+	'Serial Numbers
+	F.Data.DataView.ToDataTableDistinct("dtCombo","dvCombo","dtSerialDistinct","Serial_Number",True)
+	F.Data.DataView.Create("dtSerialDistinct","dvSerial",22,"","Serial_Number")
+	Gui.frmSearch.cboSerialNumber.AddItems("DataView","dtSerialDistinct","dvSerial","Serial_Number","Serial_Number")
+
+	'Close All DataTables
+	F.Data.DataTable.Close("dtCombo")
+	F.Data.DataTable.Close("dtPartDistinct")
+	F.Data.DataTable.Close("dtLotDistinct")
+	F.Data.DataTable.Close("dtHeatDistinct")
+	F.Data.DataTable.Close("dtSerialDistinct")
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.LoadListControls.End
+
+Program.Sub.ddlSearchBy_Click.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	F.Intrinsic.Control.SelectCase(V.Screen.frmSearch!ddlSearchBy.Text)
+		F.Intrinsic.Control.Case("Part")
+			Gui.frmSearch.cboPartNumber.Visible(True)
+			Gui.frmSearch.cboLotNumber.Visible(False)
+			Gui.frmSearch.cboBinNumber.Visible(False)
+			Gui.frmSearch.cboHeatNumber.Visible(False)
+			Gui.frmSearch.cboSerialNumber.Visible(False)
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,False,"Part",True,0,-999.0,1/1/1980,12:00:00 AM)
+		F.Intrinsic.Control.Case("Lot")
+			Gui.frmSearch.cboPartNumber.Visible(False)
+			Gui.frmSearch.cboLotNumber.Visible(True)
+			Gui.frmSearch.cboBinNumber.Visible(False)
+			Gui.frmSearch.cboHeatNumber.Visible(False)
+			Gui.frmSearch.cboSerialNumber.Visible(False)
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,False,"Lot",True,0,-999.0,1/1/1980,12:00:00 AM)
+		F.Intrinsic.Control.Case("Bin")
+			Gui.frmSearch.cboPartNumber.Visible(False)
+			Gui.frmSearch.cboLotNumber.Visible(False)
+			Gui.frmSearch.cboBinNumber.Visible(True)
+			Gui.frmSearch.cboHeatNumber.Visible(False)
+			Gui.frmSearch.cboSerialNumber.Visible(False)
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,False,"Bin",True,0,-999.0,1/1/1980,12:00:00 AM)
+		F.Intrinsic.Control.Case("Heat")
+			Gui.frmSearch.cboPartNumber.Visible(False)
+			Gui.frmSearch.cboLotNumber.Visible(False)
+			Gui.frmSearch.cboBinNumber.Visible(False)
+			Gui.frmSearch.cboHeatNumber.Visible(True)
+			Gui.frmSearch.cboSerialNumber.Visible(False)
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,False,"Heat",True,0,-999.0,1/1/1980,12:00:00 AM)
+		F.Intrinsic.Control.Case("Serial")
+			Gui.frmSearch.cboPartNumber.Visible(False)
+			Gui.frmSearch.cboLotNumber.Visible(False)
+			Gui.frmSearch.cboBinNumber.Visible(False)
+			Gui.frmSearch.cboHeatNumber.Visible(False)
+			Gui.frmSearch.cboSerialNumber.Visible(True)
+			F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,False,"Serial",True,0,-999.0,1/1/1980,12:00:00 AM)
+	F.Intrinsic.Control.EndSelect
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.ddlSearchBy_Click.End
+
+Program.Sub.LoadDtItemHist.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sSQL.Declare
+	V.Local.sWhere.Declare
+	V.Local.sValue.Declare
+	V.Local.bArg.Declare
+	
+	F.Intrinsic.Variable.ArgExists("ControlName",V.Local.bArg)
+	F.Intrinsic.Control.If(V.Local.bArg)
+		F.Intrinsic.Control.If(V.DataTable.dtItemHist.Exists)
+			F.Intrinsic.Control.CallSub(Serialize)
+		F.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.If(V.DataTable.dtItemHist.Exists)
+		F.data.DataTable.Close("dtItemHist")
+		Gui.frmSearch.GsGCSearch.ClearSorting("gvItemHist")
+		Gui.frmSearch.GsGCSearch.ClearGrouping("gvItemHist")
+	F.Intrinsic.Control.EndIf
+	
+	V.Global.bLoadData.Set(True)
+	
+	F.Intrinsic.Control.SelectCase(V.Screen.frmSearch!ddlSearchBy.Text)
+		F.Intrinsic.Control.Case("Part")
+			V.Local.sWhere.Set(V.Screen.frmSearch!ddlSearchBy.Text)
+			V.Local.sValue.Set(V.Screen.frmSearch!cboPartNumber.Text)
+		F.Intrinsic.Control.Case("Lot")
+			V.Local.sWhere.Set(V.Screen.frmSearch!ddlSearchBy.Text)
+			V.Local.sValue.Set(V.Screen.frmSearch!cboLotNumber.Text)
+		F.Intrinsic.Control.Case("Bin")
+			V.Local.sWhere.Set(V.Screen.frmSearch!ddlSearchBy.Text)
+			V.Local.sValue.Set(V.Screen.frmSearch!cboBinNumber.Text)
+		F.Intrinsic.Control.Case("Heat")
+			V.Local.sWhere.Set(V.Screen.frmSearch!ddlSearchBy.Text)
+			V.Local.sValue.Set(V.Screen.frmSearch!cboHeatNumber.Text)
+		F.Intrinsic.Control.Case("Serial")
+			V.Local.sWhere.Set("Serial_Number")
+			V.Local.sValue.Set(V.Screen.frmSearch!cboSerialNumber.Text)
+	F.Intrinsic.Control.EndSelect
+	
+	F.ODBC.Connection!con.OpenCompanyConnection(300)
+	F.Intrinsic.String.Build("Select Coalesce(Part,'') AS Part,'' As Display_Part,Location,Date_History,Code_Transaction,Lot,Bin,Heat,Serial_Number,Quantity,Cost,Job,Suffix,Case When Order_No = '0000000' Then '' Else Order_No End As Order_No,Case When Purchase_Order = '0000000' Then '' Else Purchase_Order End As Purchase_Order, userid as 'User', time_item_history as 'Time' From V_Item_History Where {0} = '{1}' Order By Date_History desc, time Desc;",V.Local.sWhere,V.Local.sValue,V.Local.sSQL)
+	F.Data.DataTable.CreateFromSQL("dtItemHist","con",V.Local.sSQL,True)
+	F.Data.DataTable.AddDisplayPartColumn("dtItemHist",0,"Part","Display_Part")
+	F.ODBC.Connection!con.Close
+	F.Intrinsic.Control.CallSub(LoadGvItemHist)
+	F.Intrinsic.Control.CallSub(Deserialize)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.LoadDtItemHist.End
+
+Program.Sub.LoadGvItemHist.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	Gui.frmSearch.GsGCSearch.AddGridviewFromDatatable("gvItemHist","dtItemHist")
+	Gui.frmSearch.GsGCSearch.MainView("gvItemHist")
+	Gui.frmSearch.GsGCSearch.SuspendLayout()
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","MultiSelect",True)
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","AllowSort",True)
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","AllowFilter",True)
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","Editable",False)
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","ReadOnly",True)
+	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","ShowGroupPanel",True)
+'	Gui.frmSearch.GsGCSearch.SetGridViewProperty("gvItemHist","OptionsFindAlwaysVisible",True)
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Part","Visible",False)
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Display_Part","Caption","Part")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Location","Caption","Loc")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","Caption","Date History")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Code_Transaction","Caption","Trans. Code")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Lot","Caption","Lot")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Bin","Caption","Bin")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Heat","Caption","Heat")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Serial_Number","Caption","Serial Number")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Quantity","Caption","Quantity")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Cost","Caption","Cost")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Job","Caption","Job")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Suffix","Caption","Suffix")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Order_No","Caption","Order No")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Purchase_Order","Caption","Purchase Order")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","User","Caption","User")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Time","Caption","Time")
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Display_Part","MinWidth","120")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Location","MinWidth","50")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","MinWidth","85")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Code_Transaction","MinWidth","85")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Lot","MinWidth","95")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Bin","MinWidth","95")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Heat","MinWidth","105")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Serial_Number","MinWidth","130")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Quantity","MinWidth","85")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Cost","MinWidth","85")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Job","MinWidth","70")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Suffix","MinWidth","50")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Order_No","MinWidth","85")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Purchase_Order","MinWidth","95")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","User","MinWidth","95")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Time","MinWidth","85")
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Display_Part","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Location","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Code_Transaction","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Lot","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Bin","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Heat","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Serial_Number","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Quantity","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Cost","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Job","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Suffix","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Order_No","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Purchase_Order","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","User","HeaderFontBold",True)
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Time","HeaderFontBold",True)
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Display_Part","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Location","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Code_Transaction","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Lot","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Bin","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Heat","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Serial_Number","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Quantity","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Cost","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Job","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Suffix","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Order_No","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Purchase_Order","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","User","HeaderHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Time","HeaderHAlignment","Center")
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Location","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Code_Transaction","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Bin","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Job","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Suffix","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Order_No","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Purchase_Order","CellHAlignment","Center")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Time","CellHAlignment","Center")
+	
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Quantity","DisplayCustomNumeric","#,###,##0.000000")
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Cost","DisplayCustomNumeric","#,###,##0.000000")
+
+	Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","Date_History","DisplayCustomDatetime","d")
+	
+	F.Intrinsic.Control.If(V.Global.bLongPart)
+		Gui.frmSearch.GsGCSearch.SetColumnProperty("gvItemHist","DISPLAY_PART","MinWidth","250")
+	F.Intrinsic.Control.EndIf
+	
+	Gui.frmSearch.GsGCSearch.ResumeLayout()
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.LoadGvItemHist.End
+
+Program.Sub.Serialize.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sSerialize.Declare
+
+	Gui.frmSearch.GsGCSearch.Serialize("gvItemHist",V.Local.sSerialize)
+	F.Global.Registry.AddValue(V.Caller.User,V.Caller.CompanyCode,"GVITEMHIST",4616,1000,False,"Serialize",False,0,-999.0,1/1/1980,12:00:00 AM,V.Local.sSerialize)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.Serialize.End
+
+Program.Sub.Deserialize.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	V.Local.sSerialize.Declare
+	
+	F.Global.Registry.ReadValue(V.Caller.User,V.Caller.CompanyCode,"GVITEMHIST",4616,1000,6,"",V.Local.sSerialize)
+	F.Intrinsic.Control.If(V.Local.sSerialize.Trim,<>,"")
+		Gui.frmSearch.GsGCSearch.Deserialize(V.Local.sSerialize)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.Deserialize.End
+
+Program.Sub.picGSSLogo_DblClick.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	Gui.frmWeb..Show
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.picGSSLogo_DblClick.End
+
+Program.Sub.frmWeb_UnLoad.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	Gui.frmWeb..Visible(False)
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.frmWeb_UnLoad.End
+
+Program.Sub.OpenWebsites.Start
+	F.Intrinsic.Control.Try
+	V.Local.sError.Declare
+	
+	v.Local.sHttp.Declare
+
+	F.Intrinsic.Control.SelectCase(V.Args.ControlName)	
+		F.Intrinsic.Control.Case("CMDGSS")
+			V.Local.sHttp.Set("http://www.globalshopsolutions.com/")
+		F.Intrinsic.Control.Case("CMDSERV")
+			V.Local.sHttp.Set("http://gss-service.com/")
+		F.Intrinsic.Control.Case("CMDUPD")
+			V.Local.sHttp.Set("http://gss-updates.com/")
+	F.Intrinsic.Control.EndSelect
+	
+	F.Intrinsic.Control.If(V.Local.sHttp,<>,"")
+		F.Intrinsic.Task.ShellExec(0,"Open",V.Local.sHttp,"","",0)
+	F.Intrinsic.Control.EndIf
+	
+	F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.OpenWebsites.End
+
+Program.Sub.CheckDefault.Start
+	V.Local.sRegistry.Declare
+	
+	F.Global.Registry.ReadValue(V.Caller.User,V.Caller.CompanyCode,"4616",4616,0,5,"",V.Local.sRegistry)
+	F.Intrinsic.Control.If(V.Local.sRegistry,<>,"")
+		Gui.frmSearch.ddlSearchBy.Text(V.Local.sRegistry)
+	F.Intrinsic.Control.EndIf
+Program.Sub.CheckDefault.End
